@@ -1,58 +1,67 @@
-Gui, New, +Resize, Ò»¼ü¸´ÖÆÕ³Ìù¹¤¾ß by Jalon
-Gui, Font, S12, Verdana
+#Requires AutoHotkey v2.0
 
-Gui, Add, Text, section, ¡°¸´ÖÆ²Ù×÷¡±ÈÈ¼ü£º
-Gui, Add, Text, , ¡°Õ³Ìù²Ù×÷¡±ÈÈ¼ü£º
-Gui, Add, Hotkey, ys-3 vCopyHotkey
-Gui, Add, Hotkey, vPasteHotkey
+my_gui := Gui("+Resize", "ä¸€é”®å¤åˆ¶ç²˜è´´å·¥å…·ï¼ˆJalonï¼‰")
+my_gui.SetFont("s12", "Verdana")
 
-Gui, Add, Button, section xs gOnApply vBtApply, Ó¦ÓÃÈÈ¼ü
-Gui, Add, Button, ys gOnCancel vBtCancel, È¡ÏûÈÈ¼ü
-GuiControl, Enable 0, BtCancel
+my_gui.AddText("section", "å¤åˆ¶æ“ä½œï¼Œçƒ­é”®ï¼š")
+my_gui.AddText(, "ç²˜è´´æ“ä½œï¼Œçƒ­é”®ï¼š")
+hotkey_copy := my_gui.AddHotkey("ys-3")
+g_copy := ""
+hotkey_paste := my_gui.AddHotkey()
+g_paste := ""
 
-Gui, Show,
-Return
+bt_apply := my_gui.AddButton("section xs", "åº”ç”¨çƒ­é”®")
+bt_apply.OnEvent("Click", OnApply)
+bt_cancel := my_gui.AddButton("ys", "å–æ¶ˆçƒ­é”®")
+bt_cancel.OnEvent("Click", OnCancel)
+bt_cancel.Enabled := false
 
-GuiClose:
-ExitApp
+my_gui.Show()
 
-OnApply:
-GuiControl, Enable 0, BtApply
+OnApply(*) {
+    global g_copy
+    global g_paste
 
-Gui, Submit, NoHide
-if(CopyHotkey != "")
-{
-    Hotkey, %CopyHotkey%, OnCopy, on
+    bt_apply.Enabled := false
+
+    g_copy := hotkey_copy.value
+    g_paste := hotkey_paste.value
+    if(g_copy != "") {
+        Hotkey(g_copy, OnCopy, "On")
+    }
+
+    if(g_paste != "") {
+        Hotkey(g_paste, OnPaste, "On")
+    }
+
+    bt_cancel.Enabled := true
 }
 
-if(PasteHotkey != "")
-{
-    Hotkey, %PasteHotkey%, OnPaste, on
+OnCancel(*) {
+    global g_copy
+    global g_paste
+
+    bt_cancel.Enabled := false
+
+    try
+        Hotkey(g_copy,, "Off")
+    catch TargetError {
+        ; do nothing
+    }
+
+    try
+        Hotkey(g_paste,, "Off")
+    catch TargetError {
+        ; do nothing
+    }
+
+    bt_apply.Enabled := true
 }
 
-GuiControl, Enable 1, BtCancel
-Return
-
-OnCancel:
-GuiControl, Enable 0, BtCancel
-
-if(CopyHotkey != "")
-{
-    Hotkey, %CopyHotkey%, , off
+OnCopy(*) {
+    send("^c")
 }
 
-if(PasteHotkey != "")
-{
-    Hotkey, %PasteHotkey%, , off
+OnPaste(*) {
+    send("^v")
 }
-
-GuiControl, Enable 1, BtApply
-Return
-
-OnCopy:
-send ^c
-Return
-
-OnPaste:
-send ^v
-Return
