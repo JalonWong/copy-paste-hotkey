@@ -6,9 +6,7 @@ my_gui.SetFont("s12", "Verdana")
 my_gui.AddText("section", "复制操作，热键：")
 my_gui.AddText(, "粘贴操作，热键：")
 hotkey_copy := my_gui.AddHotkey("ys-3")
-g_copy := ""
 hotkey_paste := my_gui.AddHotkey()
-g_paste := ""
 
 bt_apply := my_gui.AddButton("section xs", "应用热键")
 bt_apply.OnEvent("Click", OnApply)
