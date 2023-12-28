@@ -13,8 +13,16 @@ bt_apply.OnEvent("Click", OnApply)
 bt_cancel := my_gui.AddButton("ys", "取消热键")
 bt_cancel.OnEvent("Click", OnCancel)
 bt_cancel.Enabled := false
+g_copy := ""
+g_paste := ""
 
+my_gui.OnEvent("Close", OnGuiClose)
 my_gui.Show()
+
+OnGuiClose(*) {
+    OnCancel()
+    ExitApp
+}
 
 OnApply(*) {
     global g_copy
